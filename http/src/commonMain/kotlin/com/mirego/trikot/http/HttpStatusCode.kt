@@ -1,6 +1,8 @@
 package com.mirego.trikot.http
 
 enum class HttpStatusCode(val statusCode: Int) {
+    UNKNOWN(0),
+
     CONTINUE(100),
     SWITCHING_PROTOCOLS(101),
     PROCESSING(102),
@@ -82,6 +84,6 @@ enum class HttpStatusCode(val statusCode: Int) {
 
     companion object {
         private val map = values().associateBy(HttpStatusCode::statusCode)
-        fun fromInt(type: Int) = map[type] ?: INTERNAL_SERVER_ERROR
+        fun fromInt(type: Int) = map[type] ?: UNKNOWN
     }
 }
