@@ -28,11 +28,12 @@ public class TrikotHttpRequest: NSObject, HttpRequest {
             }
 
             let requestStartTime = Date()
-            logRequest(urlRequest)
+            let logLevel = httpLogLevel
+            urlRequest.logRequest(level: logLevel)
             let sessionTask = URLSession.shared.dataTask(with: urlRequest as URLRequest) { (data, urlResponse, error) in
-                self.logResponse(request: urlRequest, data: data, urlResponse: urlResponse, error: error, requestStartTime: requestStartTime)
+                urlRequest.logResponse(level: logLevel, data: data, urlResponse: urlResponse, error: error, requestStartTime: requestStartTime)
                 if let error = error {
-                    resultPublisher.error = MrFreeze().freeze(objectToFreeze: KotlinThrowable(message: error.localizedDescription)) as? KotlinThrowable
+                    resultPublisher.error = (MrFreeze().freeze(objectToFreeze: KotlinThrowable(message: error.localizedDescription)) as! KotlinThrowable)
                 } else {
                     let iosResponse = TrikotHttpResponse(data: data, response: urlResponse)
                     MrFreeze().freeze(objectToFreeze: iosResponse)
@@ -45,53 +46,6 @@ public class TrikotHttpRequest: NSObject, HttpRequest {
         }
 
         return MrFreeze().freeze(objectToFreeze: resultPublisher) as! Publisher
-    }
-
-    private func logRequest(_ request: NSURLRequest) {
-        guard httpLogLevel != .none else { return }
-
-        var requestLog = "<Http Request>\n"
-        requestLog += "\(request.httpMethod ?? "GET") \(request.url?.absoluteString ?? "<invalid url>")" + "\n"
-        if httpLogLevel == .verbose {
-            if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
-                requestLog += "Headers:\n"
-                headers.forEach { (key, value) in
-                    requestLog += "  \(key): \(value)\n"
-                }
-            }
-            if let body = request.httpBody {
-                requestLog += "Body:\n"
-                requestLog += (String(bytes: body, encoding: .utf8) ?? "<invalid body format>") + "\n"
-            }
-        }
-        requestLog += "</Http Request>"
-        print(requestLog)
-    }
-
-    private func logResponse(request: NSURLRequest, data: Data?, urlResponse: URLResponse?, error: Error?, requestStartTime: Foundation.Date) {
-        var requestLog = "<Http Reponse>\n"
-        requestLog += ("\(request.url?.absoluteString ?? "<invalid url>")") + "\n"
-        let requestionDurationInMs = Int(Date().timeIntervalSince(requestStartTime) * 1000)
-        requestLog += "Duration: \(requestionDurationInMs)ms\n"
-        if let error = error {
-            requestLog += "Error: \(error.localizedDescription)\n"
-        } else if let httpUrlResponse = urlResponse as? HTTPURLResponse {
-            requestLog += "Status Code: \(httpUrlResponse.statusCode)\n"
-            if httpLogLevel == .verbose {
-                if let headers = httpUrlResponse.allHeaderFields as? [String: String], !headers.isEmpty {
-                    requestLog += "Headers:\n"
-                    headers.forEach { (key, value) in
-                        requestLog += "  \(key): \(value)\n"
-                    }
-                }
-                if let data = data {
-                    requestLog += "Body:\n"
-                    requestLog += (String(bytes: data, encoding: .utf8) ?? "<invalid body format>") + "\n"
-                }
-            }
-        }
-        requestLog += "</Http Reponse>"
-        print(requestLog)
     }
 }
 
@@ -110,5 +64,56 @@ extension CachePolicy {
         case .reloadIgnoringCacheData : return NSURLRequest.CachePolicy.reloadIgnoringCacheData
         default: return NSURLRequest.CachePolicy.useProtocolCachePolicy
         }
+    }
+}
+
+extension NSURLRequest {
+    func logRequest(level: TrikotHttpLogLevel) {
+        guard level != .none else { return }
+
+        var requestLog = "<Http Request>\n"
+        requestLog += "\(httpMethod ?? "GET") \(url?.absoluteString ?? "<invalid url>")" + "\n"
+        if level == .verbose {
+            if let headers = allHTTPHeaderFields, !headers.isEmpty {
+                requestLog += "Headers:\n"
+                headers.forEach { (key, value) in
+                    requestLog += "  \(key): \(value)\n"
+                }
+            }
+            if let body = httpBody {
+                requestLog += "Body:\n"
+                requestLog += (String(bytes: body, encoding: .utf8) ?? "<invalid body format>") + "\n"
+            }
+        }
+        requestLog += "</Http Request>"
+        print(requestLog)
+    }
+
+    func logResponse(level: TrikotHttpLogLevel, data: Data?, urlResponse: URLResponse?, error: Error?, requestStartTime: Foundation.Date) {
+        guard level != .none else { return }
+
+        var requestLog = "<Http Reponse>\n"
+        requestLog += ("\(url?.absoluteString ?? "<invalid url>")") + "\n"
+        let requestionDurationInMs = Int(Date().timeIntervalSince(requestStartTime) * 1000)
+        requestLog += "Duration: \(requestionDurationInMs)ms\n"
+        if let error = error {
+            requestLog += "Error: \(error.localizedDescription)\n"
+        } else if let httpUrlResponse = urlResponse as? HTTPURLResponse {
+            requestLog += "Status Code: \(httpUrlResponse.statusCode)\n"
+            if level == .verbose {
+                if let headers = httpUrlResponse.allHeaderFields as? [String: String], !headers.isEmpty {
+                    requestLog += "Headers:\n"
+                    headers.forEach { (key, value) in
+                        requestLog += "  \(key): \(value)\n"
+                    }
+                }
+                if let data = data {
+                    requestLog += "Body:\n"
+                    requestLog += (String(bytes: data, encoding: .utf8) ?? "<invalid body format>") + "\n"
+                }
+            }
+        }
+        requestLog += "</Http Reponse>"
+        print(requestLog)
     }
 }
