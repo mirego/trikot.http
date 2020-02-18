@@ -22,9 +22,9 @@ class AndroidConnectivityPublisher(application: ContextWrapper) :
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
 
-        override fun onAvailable(network: Network?) {
+        override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            value = connectivityManager.getNetworkCapabilities(network).asConnectivityState()
+            value = connectivityManager.getNetworkCapabilities(network)?.asConnectivityState()
         }
 
         override fun onCapabilitiesChanged(
@@ -35,7 +35,7 @@ class AndroidConnectivityPublisher(application: ContextWrapper) :
             value = networkCapabilities.asConnectivityState()
         }
 
-        override fun onLost(network: Network?) {
+        override fun onLost(network: Network) {
             super.onLost(network)
             val isConnected = connectivityManager.activeNetworkInfo?.isConnected == true
             if (!isConnected) value = ConnectivityState.NONE
