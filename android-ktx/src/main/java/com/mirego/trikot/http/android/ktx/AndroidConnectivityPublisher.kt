@@ -1,6 +1,6 @@
 package com.mirego.trikot.http.android.ktx
 
-import android.annotation.TargetApi
+import android.Manifest
 import android.content.Context
 import android.content.ContextWrapper
 import android.net.ConnectivityManager
@@ -9,11 +9,14 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import com.mirego.trikot.http.connectivity.ConnectivityState
 import com.mirego.trikot.streams.reactive.BehaviorSubjectImpl
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class AndroidConnectivityPublisher(application: ContextWrapper) :
+class AndroidConnectivityPublisher @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE) constructor(
+    application: ContextWrapper
+) :
     BehaviorSubjectImpl<ConnectivityState>() {
 
     private val connectivityManager: ConnectivityManager =
@@ -66,8 +69,8 @@ class AndroidConnectivityPublisher(application: ContextWrapper) :
 private fun NetworkCapabilities.asConnectivityState(): ConnectivityState {
     return when {
         hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-            hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-            || hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> ConnectivityState.WIFI
+                hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                || hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> ConnectivityState.WIFI
         else -> ConnectivityState.CELLULAR
     }
 }
