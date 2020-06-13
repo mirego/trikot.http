@@ -4,6 +4,8 @@ import TRIKOT_FRAMEWORK_NAME
 public class TrikotHttpResponse: NSObject, HttpResponse {
     public var bodyString: String?
 
+    public var bodyByteArray: KotlinByteArray?
+
     public var headers: [String: String]
 
     public var source: HttpResponseResponseSource
@@ -23,6 +25,7 @@ public class TrikotHttpResponse: NSObject, HttpResponse {
             statusCode = Int32(response.statusCode)
         }
         if let data = data {
+            bodyByteArray = ByteArrayNativeUtils().convert(data: data)
             bodyString = String(data: data, encoding: .utf8)
         }
 

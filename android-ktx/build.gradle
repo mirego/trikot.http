@@ -15,6 +15,7 @@ repositories {
     maven { url "https://kotlin.bintray.com/kotlinx" }
     maven { url 'https://jitpack.io' }
     maven { url('https://s3.amazonaws.com/mirego-maven/public') }
+    mavenLocal()
 }
 
 group 'com.mirego.trikot.http'
@@ -35,7 +36,7 @@ configurations.all {
 
 dependencies {
     api "com.mirego.trikot:streams:$trikot_streams_version"
-    api 'com.mirego.trikot:http:0.22.1'
+    api 'com.mirego.trikot:http:0.24.1-SNAPSHOT'
     implementation "io.ktor:ktor-client-android:$ktor_version"
     api "io.ktor:ktor-client-logging-jvm:$ktor_version"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
@@ -53,6 +54,16 @@ publishing {
     publications {
         mavenAar(MavenPublication) {
             from components.android
+        }
+    }
+}
+
+kotlin {
+    sourceSets {
+        all {
+            languageSettings {
+                useExperimentalAnnotation('kotlin.ExperimentalStdlibApi')
+            }
         }
     }
 }

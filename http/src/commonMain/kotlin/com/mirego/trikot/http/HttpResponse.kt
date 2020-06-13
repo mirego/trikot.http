@@ -11,6 +11,10 @@ interface HttpResponse {
      */
     val bodyString: String?
     /**
+     * Body result as ByteArray
+     */
+    val bodyByteArray: ByteArray?
+    /**
      * Result header
      */
     val headers: Map<String, String>
