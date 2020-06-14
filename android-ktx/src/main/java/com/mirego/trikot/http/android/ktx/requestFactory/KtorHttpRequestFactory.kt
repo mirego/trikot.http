@@ -96,7 +96,6 @@ class KtorHttpRequestFactory(
     class KTorHttpResponse(response: io.ktor.client.response.HttpResponse, bytes: ByteArray?) : HttpResponse {
         override val statusCode: Int = response.status.value
         override val bodyByteArray: ByteArray? = bytes
-        override val bodyString: String? get() = bodyByteArray?.decodeToString()
         override val headers: Map<String, String> = response.headers.flattenEntries().toMap()
         override val source: HttpResponse.ResponseSource = HttpResponse.ResponseSource.UNKNOWN
     }
