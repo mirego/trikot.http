@@ -10,6 +10,7 @@ import com.mirego.trikot.http.requestFactory.EmptyHttpRequestFactory
 import com.mirego.trikot.streams.reactive.Publishers
 import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import org.reactivestreams.Publisher
 
 object HttpConfiguration {
@@ -86,5 +87,12 @@ object HttpConfiguration {
      * Shared JSON parser used by DeserializableHttpRequestPublisher
      */
     @OptIn(UnstableDefault::class)
-    val json = Json.nonstrict.also { freeze(it) }
+    val json = Json(
+        JsonConfiguration(
+            isLenient = true,
+            ignoreUnknownKeys = true,
+            serializeSpecialFloatingPointValues = true,
+            useArrayPolymorphism = true
+        )
+    ).also { freeze(it) }
 }

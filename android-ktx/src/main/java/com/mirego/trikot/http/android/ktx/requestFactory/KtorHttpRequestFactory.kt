@@ -17,16 +17,15 @@ import io.ktor.client.features.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.url
-import io.ktor.client.response.readBytes
+import io.ktor.client.statement.*
 import io.ktor.content.ByteArrayContent
 import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
-import io.ktor.util.flattenEntries
+import io.ktor.util.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.io.charsets.MalformedInputException
 import org.reactivestreams.Publisher
 import kotlin.coroutines.CoroutineContext
 
@@ -56,7 +55,7 @@ class KtorHttpRequestFactory(
                     }
                 }
                 try {
-                    val response = client.request<io.ktor.client.response.HttpResponse> {
+                    val httpStatement = client.request<HttpStatement> {
                         url((requestBuilder.baseUrl ?: "") + (requestBuilder.path ?: ""))
                         requestBuilder.headers.filter { it.key != com.mirego.trikot.http.ContentType }
                             .forEach { entry ->
@@ -78,6 +77,7 @@ class KtorHttpRequestFactory(
                         method = requestBuilder.method.ktorMethod
                     }
 
+                    val response = httpStatement.execute()
                     publisher.value = KTorHttpResponse(response, response.call.response.readBytes())
                 } catch (ex: Exception) {
                     val response = (ex as? ResponseException)?.response
@@ -93,7 +93,7 @@ class KtorHttpRequestFactory(
         }
     }
 
-    class KTorHttpResponse(response: io.ktor.client.response.HttpResponse, bytes: ByteArray?) : HttpResponse {
+    class KTorHttpResponse(response: io.ktor.client.statement.HttpResponse, bytes: ByteArray?) : HttpResponse {
         override val statusCode: Int = response.status.value
         override val bodyByteArray: ByteArray? = bytes
         override val headers: Map<String, String> = response.headers.flattenEntries().toMap()
