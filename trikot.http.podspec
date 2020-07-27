@@ -9,6 +9,10 @@ Pod::Spec.new do |spec|
   spec.source        = { :git => "https://github.com/mirego/trikot.http.git", :tag => "#{spec.version}" }
   spec.source_files  = "swift-extensions/*.swift"
   spec.static_framework = true
-
+  
   spec.dependency 'ReachabilitySwift', '~> 4.3.1'
+
+  spec.prepare_command = <<-CMD
+    sed -i '' "s/TRIKOT_FRAMEWORK_NAME/${TRIKOT_FRAMEWORK_NAME}/g" ./**/*.swift
+  CMD
 end
