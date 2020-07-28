@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.source_files  = "swift-extensions/*.swift"
   spec.static_framework = true
 
-  spec.weak_framework = 'Test'
+  spec.weak_framework = 'TelMedicCommon'
   spec.dependency 'ReachabilitySwift', '~> 4.3.1'
 
   spec.prepare_command = <<-CMD
