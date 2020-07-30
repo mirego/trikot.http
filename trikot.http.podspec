@@ -8,6 +8,7 @@ Pod::Spec.new do |spec|
   spec.author        = { "Martin Gagnon" => "mgagnon@mirego.com" }
   spec.source        = { :git => "https://github.com/mirego/trikot.http.git", :tag => "#{spec.version}" }
   spec.source_files  = "swift-extensions/*.swift"
+  spec.static_framework = true
 
   spec.dependency ENV['TRIKOT_FRAMEWORK_NAME']
   spec.dependency 'ReachabilitySwift', '~> 4.3.1'
