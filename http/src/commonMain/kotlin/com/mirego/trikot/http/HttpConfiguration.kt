@@ -3,20 +3,17 @@ package com.mirego.trikot.http
 import com.mirego.trikot.foundation.concurrent.AtomicReference
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.DispatchQueue
 import com.mirego.trikot.foundation.concurrent.dispatchQueue.OperationDispatchQueue
-import com.mirego.trikot.foundation.concurrent.freeze
 import com.mirego.trikot.http.connectivity.ConnectivityState
 import com.mirego.trikot.http.header.DefaultHttpHeaderProvider
 import com.mirego.trikot.http.requestFactory.EmptyHttpRequestFactory
 import com.mirego.trikot.streams.reactive.Publishers
-import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import org.reactivestreams.Publisher
 
 object HttpConfiguration {
-    private val internalHttpRequestFactory = AtomicReference<HttpRequestFactory>(
-        EmptyHttpRequestFactory()
-    )
+    private val internalHttpRequestFactory =
+        AtomicReference<HttpRequestFactory>(EmptyHttpRequestFactory())
     private val internalNetworkDispatchQueue =
         AtomicReference<DispatchQueue>(OperationDispatchQueue())
     private val internalDefaultHeaderProvider =
@@ -24,6 +21,19 @@ object HttpConfiguration {
     private val internalConnectivityStatePublisher =
         AtomicReference<Publisher<ConnectivityState>>(Publishers.behaviorSubject())
     private val internalBaseUrl = AtomicReference("")
+    private val internalJson =
+        AtomicReference(defaultJsonConfiguration())
+
+    private fun defaultJsonConfiguration(): Json {
+        return Json(
+            JsonConfiguration(
+                isLenient = true,
+                ignoreUnknownKeys = true,
+                serializeSpecialFloatingPointValues = true,
+                useArrayPolymorphism = true
+            )
+        )
+    }
 
     /**
      * Shared HTTPRequestFactory
