@@ -5,6 +5,5 @@ import org.reactivestreams.Publisher
 import kotlin.js.JsName
 
 interface HttpRequest {
-    @JsName("execute")
     fun execute(cancellableManager: CancellableManager): Publisher<HttpResponse>
 }
