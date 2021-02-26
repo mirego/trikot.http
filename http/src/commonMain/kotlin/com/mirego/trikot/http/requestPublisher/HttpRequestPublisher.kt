@@ -1,6 +1,6 @@
 package com.mirego.trikot.http.requestPublisher
 
-import com.mirego.trikot.foundation.concurrent.dispatchQueue.DispatchQueue
+import com.mirego.trikot.foundation.concurrent.dispatchQueue.TrikotDispatchQueue
 import com.mirego.trikot.http.HttpConfiguration
 import com.mirego.trikot.http.HttpHeaderProvider
 import com.mirego.trikot.http.HttpRequestFactory
@@ -16,8 +16,8 @@ import com.mirego.trikot.streams.reactive.subscribe
 import org.reactivestreams.Publisher
 
 abstract class HttpRequestPublisher<T>(
-    networkQueue: DispatchQueue = HttpConfiguration.networkDispatchQueue,
-    private val operationQueue: DispatchQueue = StreamsConfiguration.publisherExecutionDispatchQueue,
+    networkQueue: TrikotDispatchQueue = HttpConfiguration.networkDispatchQueue,
+    private val operationQueue: TrikotDispatchQueue = StreamsConfiguration.publisherExecutionDispatchQueue,
     private val httpRequestFactory: HttpRequestFactory = HttpConfiguration.httpRequestFactory,
     private val headerProvider: HttpHeaderProvider = HttpConfiguration.defaultHttpHeaderProvider,
     private val connectivityPublisher: Publisher<ConnectivityState> = HttpConfiguration.connectivityPublisher
@@ -49,15 +49,18 @@ abstract class HttpRequestPublisher<T>(
                     onError = { sourceError ->
                         headerProvider.processHttpError(requestBuilder, sourceError)
 
-                        connectivityPublisher.first().subscribe(cancellableManager) { connectivityState ->
-                            val exceptionToDispatch = when (connectivityState) {
-                                ConnectivityState.NONE -> HttpResponseNoInternetConnectionException(sourceError)
-                                else -> sourceError
+                        connectivityPublisher.first()
+                            .subscribe(cancellableManager) { connectivityState ->
+                                val exceptionToDispatch = when (connectivityState) {
+                                    ConnectivityState.NONE -> HttpResponseNoInternetConnectionException(
+                                        sourceError
+                                    )
+                                    else -> sourceError
+                                }
+                                operationQueue.dispatch {
+                                    dispatchError(exceptionToDispatch)
+                                }
                             }
-                            operationQueue.dispatch {
-                                dispatchError(exceptionToDispatch)
-                            }
-                        }
                     }
                 )
             },
