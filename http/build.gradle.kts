@@ -27,7 +27,9 @@ kotlin {
     iosArm32("iosArm32")
     tvos()
     js(IR) {
+        moduleName = "@trikot/http"
         browser()
+        binaries.executable()
     }
 
     sourceSets {
@@ -67,9 +69,6 @@ kotlin {
 
         val jsTest by getting {
             dependsOn(commonTest)
-            dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-test-js")
-            }
         }
 
         val androidMain by getting {
