@@ -30,11 +30,13 @@ abstract class HttpRequestPublisher<T>(
     override fun internalRun(cancellableManager: CancellableManager) {
         val headerPublisher = headerProvider.headerForURLRequest(cancellableManager, builder)
 
-        headerPublisher.first().subscribe(cancellableManager,
+        headerPublisher.first().subscribe(
+            cancellableManager,
             onNext = { headers ->
                 val requestBuilder = mergeBuilderWithHeaders(headers)
 
-                executeRequest(cancellableManager, requestBuilder).subscribe(cancellableManager,
+                executeRequest(cancellableManager, requestBuilder).subscribe(
+                    cancellableManager,
                     onNext = {
                         operationQueue.dispatch {
                             try {
@@ -56,11 +58,13 @@ abstract class HttpRequestPublisher<T>(
                                 dispatchError(exceptionToDispatch)
                             }
                         }
-                    })
+                    }
+                )
             },
             onError = {
                 dispatchError(it)
-            })
+            }
+        )
     }
 
     private fun executeRequest(
