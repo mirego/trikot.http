@@ -2,7 +2,6 @@ package com.mirego.trikot.http
 
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import org.reactivestreams.Publisher
-import kotlin.js.JsName
 
 interface HttpHeaderProvider {
     /**
