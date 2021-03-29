@@ -25,11 +25,11 @@ import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.util.flattenEntries
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.reactivestreams.Publisher
+import kotlin.coroutines.CoroutineContext
 
 private const val DEFAULT_TIMEOUT_MS = 10000L
 
