@@ -9,6 +9,7 @@ import com.mirego.trikot.http.RequestBuilder
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.Publishers
 import io.ktor.client.HttpClient
+import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.ResponseException
 import io.ktor.client.features.logging.DEFAULT
 import io.ktor.client.features.logging.LogLevel
@@ -24,22 +25,32 @@ import io.ktor.content.TextContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.util.flattenEntries
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.reactivestreams.Publisher
-import kotlin.coroutines.CoroutineContext
+
+private const val DEFAULT_TIMEOUT_MS = 10000L
 
 class KtorHttpRequestFactory(
     httpLogLevel: LogLevel = LogLevel.NONE,
     httpLogger: Logger = Logger.DEFAULT,
-    private var httpClient: HttpClient = HttpClient()
+    private var httpClient: HttpClient = HttpClient(),
+    requestTimeoutMs: Long = DEFAULT_TIMEOUT_MS,
+    socketTimeoutMs: Long = requestTimeoutMs,
+    connectTimeoutMs: Long = requestTimeoutMs
 ) : HttpRequestFactory {
     init {
         httpClient = httpClient.config {
             install(Logging) {
                 logger = httpLogger
                 level = httpLogLevel
+            }
+            install(HttpTimeout) {
+                requestTimeoutMillis = requestTimeoutMs
+                socketTimeoutMillis = socketTimeoutMs
+                connectTimeoutMillis = connectTimeoutMs
             }
         }
     }
