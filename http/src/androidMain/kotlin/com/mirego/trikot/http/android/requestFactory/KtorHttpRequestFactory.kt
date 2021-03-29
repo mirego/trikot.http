@@ -30,16 +30,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.reactivestreams.Publisher
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.seconds
 
-private const val DEFAULT_TIMEOUT_MS = 10000L
+@ExperimentalTime
+private val DEFAULT_TIMEOUT_DURATION = 10.seconds
 
+@ExperimentalTime
 class KtorHttpRequestFactory(
     httpLogLevel: LogLevel = LogLevel.NONE,
     httpLogger: Logger = Logger.DEFAULT,
     private var httpClient: HttpClient = HttpClient(),
-    requestTimeoutMs: Long = DEFAULT_TIMEOUT_MS,
-    socketTimeoutMs: Long = requestTimeoutMs,
-    connectTimeoutMs: Long = requestTimeoutMs
+    requestTimeoutDuration: Duration = DEFAULT_TIMEOUT_DURATION,
+    socketTimeoutDuration: Duration = requestTimeoutDuration,
+    connectTimeoutDuration: Duration = requestTimeoutDuration
 ) : HttpRequestFactory {
     init {
         httpClient = httpClient.config {
@@ -48,9 +53,9 @@ class KtorHttpRequestFactory(
                 level = httpLogLevel
             }
             install(HttpTimeout) {
-                requestTimeoutMillis = requestTimeoutMs
-                socketTimeoutMillis = socketTimeoutMs
-                connectTimeoutMillis = connectTimeoutMs
+                requestTimeoutMillis = requestTimeoutDuration.toLongMilliseconds()
+                socketTimeoutMillis = socketTimeoutDuration.toLongMilliseconds()
+                connectTimeoutMillis = connectTimeoutDuration.toLongMilliseconds()
             }
         }
     }
