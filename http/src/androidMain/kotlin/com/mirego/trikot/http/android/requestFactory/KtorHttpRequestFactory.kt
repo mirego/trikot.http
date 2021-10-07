@@ -15,6 +15,7 @@ import io.ktor.client.features.logging.DEFAULT
 import io.ktor.client.features.logging.LogLevel
 import io.ktor.client.features.logging.Logger
 import io.ktor.client.features.logging.Logging
+import io.ktor.client.features.timeout
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.url
@@ -29,7 +30,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.reactivestreams.Publisher
+import kotlin.ByteArray
+import kotlin.Int
+import kotlin.String
+import kotlin.Throwable
 import kotlin.coroutines.CoroutineContext
+import kotlin.let
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
@@ -96,6 +102,13 @@ class KtorHttpRequestFactory(
                                 body = TextContent(it, ContentType.parse(contentType))
                             }
                         }
+
+                        requestBuilder.timeout?.takeIf { it > 0 }?.let { timeout ->
+                            timeout {
+                                requestTimeoutMillis = Duration.seconds(timeout).inWholeMilliseconds
+                            }
+                        }
+
                         method = requestBuilder.method.ktorMethod
                     }.execute { response ->
                         publisher.value =

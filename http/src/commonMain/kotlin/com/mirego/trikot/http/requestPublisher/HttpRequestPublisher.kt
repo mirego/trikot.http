@@ -51,10 +51,8 @@ abstract class HttpRequestPublisher<T>(
 
                         connectivityPublisher.first()
                             .subscribe(cancellableManager) { connectivityState ->
-                                val exceptionToDispatch = when (connectivityState) {
-                                    ConnectivityState.NONE -> HttpResponseNoInternetConnectionException(
-                                        sourceError
-                                    )
+                                val exceptionToDispatch = when {
+                                    connectivityState == ConnectivityState.NONE -> HttpResponseNoInternetConnectionException(sourceError)
                                     else -> sourceError
                                 }
                                 operationQueue.dispatch {
@@ -84,6 +82,7 @@ abstract class HttpRequestPublisher<T>(
             it.body = builder.body
             it.headers = builder.headers + headers
             it.method = builder.method
+            it.timeout = builder.timeout
         }
     }
 }

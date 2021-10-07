@@ -14,7 +14,7 @@ public class TrikotHttpRequest: NSObject, HttpRequest {
         let resultPublisher = Publishers().frozenBehaviorSubject(value: nil)
 
         if let url = URL(string: (requestBuilder.baseUrl ?? "") + (requestBuilder.path ?? "")) {
-            let urlRequest = NSMutableURLRequest(url: url, cachePolicy: requestBuilder.nsCachePolicy(), timeoutInterval: TimeInterval(requestBuilder.timeout))
+            let urlRequest = NSMutableURLRequest(url: url, cachePolicy: requestBuilder.nsCachePolicy(), timeoutInterval: TimeInterval(requestBuilder.timeout ?? 30))
             urlRequest.httpMethod = requestBuilder.method.name.uppercased()
 
             requestBuilder.headers.forEach { key, value in
