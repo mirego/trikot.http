@@ -6,10 +6,12 @@ import com.mirego.trikot.http.HttpRequest
 import com.mirego.trikot.http.HttpRequestFactory
 import com.mirego.trikot.http.HttpResponse
 import com.mirego.trikot.http.RequestBuilder
+import com.mirego.trikot.http.exception.HttpRequestTimeoutException
 import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.Publishers
 import io.ktor.client.HttpClient
 import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.HttpRequestTimeoutException as KtorRequestTimeoutException
 import io.ktor.client.features.ResponseException
 import io.ktor.client.features.logging.DEFAULT
 import io.ktor.client.features.logging.LogLevel
@@ -120,7 +122,10 @@ class KtorHttpRequestFactory(
                         publisher.value =
                             KTorHttpResponse(response, response.call.response.readBytes())
                     } else {
-                        publisher.error = ex
+                        publisher.error = when (ex) {
+                            is KtorRequestTimeoutException -> HttpRequestTimeoutException(ex)
+                            else -> ex
+                        }
                     }
                 }
             }
