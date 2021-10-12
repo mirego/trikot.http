@@ -36,7 +36,7 @@ public class TrikotHttpRequest: NSObject, HttpRequest {
                 urlRequest.logResponse(level: logLevel, data: data, urlResponse: urlResponse, error: error, requestStartTime: requestStartTime)
                 if let error = error {
                     if error._code == TIMEOUT_ERROR_CODE {
-                        resultPublisher.error = (MrFreeze().freeze(objectToFreeze: HttpRequestTimeoutException(error)) as! HttpRequestTimeoutException)
+                        resultPublisher.error = (MrFreeze().freeze(objectToFreeze: HttpRequestTimeoutException(source: KotlinThrowable(message: error.localizedDescription))) as! HttpRequestTimeoutException)
                     } else {
                         resultPublisher.error = (MrFreeze().freeze(objectToFreeze: KotlinThrowable(message: error.localizedDescription)) as! KotlinThrowable)
                     }
