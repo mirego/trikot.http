@@ -11,7 +11,6 @@ import com.mirego.trikot.streams.cancellable.CancellableManager
 import com.mirego.trikot.streams.reactive.Publishers
 import io.ktor.client.HttpClient
 import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.HttpRequestTimeoutException as KtorRequestTimeoutException
 import io.ktor.client.features.ResponseException
 import io.ktor.client.features.logging.DEFAULT
 import io.ktor.client.features.logging.LogLevel
@@ -40,6 +39,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.let
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
+import io.ktor.client.features.HttpRequestTimeoutException as KtorRequestTimeoutException
 
 @ExperimentalTime
 private val DEFAULT_TIMEOUT_DURATION = Duration.seconds(10)
