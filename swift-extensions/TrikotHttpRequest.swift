@@ -4,7 +4,7 @@ import TRIKOT_FRAMEWORK_NAME
 public class TrikotHttpRequest: NSObject, HttpRequest {
     private struct Constants {
         static let HTTP_TIMEOUT_ERROR_CODE = -1001
-        static let DEFAULT_TIMEOUT_DURATION_IN_SECONDS = 30
+        static let DEFAULT_TIMEOUT_DURATION_IN_SECONDS = KotlinInt(integerLiteral: 30)
     }
 
     private let requestBuilder: RequestBuilder
