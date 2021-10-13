@@ -14,6 +14,7 @@ import com.mirego.trikot.streams.reactive.executable.BaseExecutablePublisher
 import com.mirego.trikot.streams.reactive.first
 import com.mirego.trikot.streams.reactive.subscribe
 import org.reactivestreams.Publisher
+import kotlin.time.ExperimentalTime
 
 abstract class HttpRequestPublisher<T>(
     networkQueue: TrikotDispatchQueue = HttpConfiguration.networkDispatchQueue,
@@ -27,6 +28,7 @@ abstract class HttpRequestPublisher<T>(
 
     abstract fun processResponse(response: HttpResponse): T
 
+    @ExperimentalTime
     override fun internalRun(cancellableManager: CancellableManager) {
         val headerPublisher = headerProvider.headerForURLRequest(cancellableManager, builder)
 
@@ -77,6 +79,7 @@ abstract class HttpRequestPublisher<T>(
         return httpRequestFactory.request(requestBuilder).execute(cancellableManager)
     }
 
+    @ExperimentalTime
     private fun mergeBuilderWithHeaders(headers: Map<String, String>): RequestBuilder {
         return RequestBuilder().also {
             it.baseUrl = builder.baseUrl
