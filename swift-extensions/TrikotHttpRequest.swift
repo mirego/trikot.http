@@ -1,10 +1,12 @@
 import Foundation
 import TRIKOT_FRAMEWORK_NAME
 
-let TIMEOUT_ERROR_CODE = -1001
-let DEFAULT_TIMEOUT = 30
-
 public class TrikotHttpRequest: NSObject, HttpRequest {
+    private struct Constants {
+        static let HTTP_TIMEOUT_ERROR_CODE = -1001
+        static let DEFAULT_TIMEOUT_DURATION_IN_SECONDS = 30
+    }
+
     private let requestBuilder: RequestBuilder
     private let httpLogLevel: TrikotHttpLogLevel
 
@@ -17,7 +19,7 @@ public class TrikotHttpRequest: NSObject, HttpRequest {
         let resultPublisher = Publishers().frozenBehaviorSubject(value: nil)
 
         if let url = URL(string: (requestBuilder.baseUrl ?? "") + (requestBuilder.path ?? "")) {
-            let urlRequest = NSMutableURLRequest(url: url, cachePolicy: requestBuilder.nsCachePolicy(), timeoutInterval: TimeInterval(requestBuilder.timeout ?? DEFAULT_TIMEOUT))
+            let urlRequest = NSMutableURLRequest(url: url, cachePolicy: requestBuilder.nsCachePolicy(), timeoutInterval: TimeInterval(requestBuilder.timeout ?? Constants.DEFAULT_TIMEOUT_DURATION_IN_SECONDS))
             urlRequest.httpMethod = requestBuilder.method.name.uppercased()
 
             requestBuilder.headers.forEach { key, value in
@@ -36,7 +38,7 @@ public class TrikotHttpRequest: NSObject, HttpRequest {
             let sessionTask = URLSession.shared.dataTask(with: urlRequest as URLRequest) { (data, urlResponse, error) in
                 urlRequest.logResponse(level: logLevel, data: data, urlResponse: urlResponse, error: error, requestStartTime: requestStartTime)
                 if let error = error {
-                    if error._code == TIMEOUT_ERROR_CODE {
+                    if error._code == Constants.HTTP_TIMEOUT_ERROR_CODE {
                         resultPublisher.error = (MrFreeze().freeze(objectToFreeze: HttpRequestTimeoutException(source: KotlinThrowable(message: error.localizedDescription))) as! HttpRequestTimeoutException)
                     } else {
                         resultPublisher.error = (MrFreeze().freeze(objectToFreeze: KotlinThrowable(message: error.localizedDescription)) as! KotlinThrowable)
