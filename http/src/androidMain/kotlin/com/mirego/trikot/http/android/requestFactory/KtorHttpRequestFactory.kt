@@ -105,9 +105,9 @@ class KtorHttpRequestFactory(
                             }
                         }
 
-                        requestBuilder.timeout?.inWholeMilliseconds?.takeIf { it > 0 }?.let { timeout ->
+                        requestBuilder.timeout?.takeIf { it > 0 }?.let { timeout ->
                             timeout {
-                                requestTimeoutMillis = timeout
+                                requestTimeoutMillis = Duration.seconds(timeout).inWholeMilliseconds
                             }
                         }
 

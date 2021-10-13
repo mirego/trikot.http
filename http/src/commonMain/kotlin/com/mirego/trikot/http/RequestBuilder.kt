@@ -1,8 +1,5 @@
 package com.mirego.trikot.http
 
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
-
 class RequestBuilder {
     /**
      * Base path
@@ -31,11 +28,10 @@ class RequestBuilder {
      */
     var cachePolicy: CachePolicy = CachePolicy.USE_PROTOCOL_CACHE_POLICY
     /**
-     * Timeout that needs to be applied to this specific request.
+     * Timeout (in seconds) that needs to be applied to this specific request.
      * If null, the default configured timeout will be used
      */
-    @ExperimentalTime
-    var timeout: Duration? = null
+    var timeout: Int? = null
     /**
      * Unsupported
      */

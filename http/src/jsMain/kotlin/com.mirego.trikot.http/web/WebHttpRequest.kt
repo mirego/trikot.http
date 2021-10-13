@@ -9,17 +9,13 @@ import org.reactivestreams.Publisher
 import org.w3c.xhr.ARRAYBUFFER
 import org.w3c.xhr.XMLHttpRequest
 import org.w3c.xhr.XMLHttpRequestResponseType
-import kotlin.time.Duration
-import kotlin.time.ExperimentalTime
 
 class WebHttpRequest(
     private val requestBuilder: RequestBuilder
 ) : HttpRequest {
 
-    @ExperimentalTime
-    private val DEFAULT_TIMEOUT = Duration.seconds(30)
+    private val DEFAULT_TIMEOUT_IN_SECONDS = 30
 
-    @ExperimentalTime
     override fun execute(cancellableManager: CancellableManager): Publisher<HttpResponse> {
         val publisher = Publishers.behaviorSubject<HttpResponse>()
 
@@ -27,7 +23,7 @@ class WebHttpRequest(
             val xhr = XMLHttpRequest()
             val method = requestBuilder.method.toString()
             val url = (requestBuilder.baseUrl ?: "") + (requestBuilder.path ?: "")
-            val timeout = (requestBuilder.timeout ?: DEFAULT_TIMEOUT).inWholeMilliseconds.toInt()
+            val timeout = (requestBuilder.timeout ?: DEFAULT_TIMEOUT_IN_SECONDS) * 1000
 
             xhr.open(method, url, true)
 
