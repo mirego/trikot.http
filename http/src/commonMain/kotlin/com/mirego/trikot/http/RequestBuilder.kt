@@ -69,10 +69,14 @@ class RequestBuilder {
             when (queryParameters) {
                 null -> ""
                 else -> {
-                    val prefix = when (path?.contains("?")) { true -> "&" else -> "?" }
+                    val prefix = when (path?.contains("?")) {
+                        true -> "&"
+                        else -> "?"
+                    }
                     "$prefix${queryParameters.formUrlEncode()}"
                 }
-            })
+            }
+            )
     }
 
     private fun buildParameters(): Parameters? {
