@@ -22,7 +22,7 @@ class RequestBuilderTest {
     }
 
     @Test
-    fun `given empty path when buildUrl then return base url`() {
+    fun testGivenEmptyPathWhenBuildUrlThenReturnBaseUrl() {
 
         val requestBuilder = RequestBuilder().also {
             it.baseUrl = BASE_URL
@@ -32,14 +32,24 @@ class RequestBuilderTest {
     }
 
     @Test
-    fun `given empty baseUrl and path when buildUrl then return empty string`() {
+    fun testGivenEmptyBaseUrlWhenBuildUrlThenReturnPath() {
+
+        val requestBuilder = RequestBuilder().also {
+            it.path = PATH
+        }
+
+        assertEquals(PATH, requestBuilder.buildUrl())
+    }
+
+    @Test
+    fun testGivenEmptyPathAndUrlWhenBuildUrlThenReturnEmptyString() {
         val requestBuilder = RequestBuilder()
 
         assertEquals("", requestBuilder.buildUrl())
     }
 
     @Test
-    fun `given parameters when buildUrl then return url with encoded parameters`() {
+    fun testGivenParametersWhenBuildUrlThenReturnUrlWithEncodedParameters() {
         val requestBuilder = RequestBuilder().also {
             it.baseUrl = BASE_URL
             it.path = PATH
@@ -57,7 +67,7 @@ class RequestBuilderTest {
     }
 
     @Test
-    fun `given path already contains parameters when buildUrl then return url with additional parameters encoded`() {
+    fun testGivenPathAlreadyContainsParametersWhenBuildUrlThenReturnUrlWithAdditionalParametersEncoded() {
         val requestBuilder = RequestBuilder().also {
             it.baseUrl = BASE_URL
             it.path = "$PATH?foo=bar"
